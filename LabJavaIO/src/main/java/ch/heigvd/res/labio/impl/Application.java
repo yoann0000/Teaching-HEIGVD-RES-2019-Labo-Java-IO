@@ -7,10 +7,8 @@ import ch.heigvd.res.labio.interfaces.IFileExplorer;
 import ch.heigvd.res.labio.interfaces.IFileVisitor;
 import ch.heigvd.res.labio.quotes.QuoteClient;
 import ch.heigvd.res.labio.quotes.Quote;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+
+import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -27,7 +25,7 @@ public class Application implements IApplication {
    */
   public static String WORKSPACE_DIRECTORY = "./workspace/quotes";
   private static final Logger LOG = Logger.getLogger(Application.class.getName());
-  
+
   public static void main(String[] args) {
 
     /*
@@ -83,8 +81,7 @@ public class Application implements IApplication {
     QuoteClient client = new QuoteClient();
     for (int i = 0; i < numberOfQuotes; i++) {
       Quote quote = client.fetchQuote();
-      storeQuote(quote, "quote-" + i + ".utf8"); //FIXME
-
+      storeQuote(quote, "quote-" + i + ".utf8");
       LOG.info("Received a new joke with " + quote.getTags().size() + " tags.");
       for (String tag : quote.getTags()) {
         LOG.info("> " + tag);
@@ -119,10 +116,24 @@ public class Application implements IApplication {
    */
   void storeQuote(Quote quote, String filename) throws IOException {
     String currentDir = WORKSPACE_DIRECTORY;
+
     for (String s: quote.getTags()) {
-      //FIXME
+      currentDir = currentDir.concat("/").concat(s);
     }
-    throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    currentDir = currentDir.concat("/").concat(filename);
+    File file = new File(currentDir);
+
+    boolean newDir =  file.getParentFile().mkdirs();
+    if (!newDir)
+      throw new IOException("Directory not created");
+
+    boolean newFile = file.createNewFile();
+    if (!newFile)
+      throw new IOException("File not created");
+
+    BufferedWriter writer = new BufferedWriter(new FileWriter(currentDir));
+    writer.write(quote.getQuote());
+    writer.close();
   }
 
   /**
