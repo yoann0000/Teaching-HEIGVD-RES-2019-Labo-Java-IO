@@ -82,7 +82,7 @@ public class Application implements IApplication {
     for (int i = 0; i < numberOfQuotes; i++) {
       Quote quote = client.fetchQuote();
       storeQuote(quote, "quote-" + i + ".utf8");
-      LOG.info("Received a new joke with " + quote.getTags().size() + " tags.");
+      LOG.info("Received a new joke with " + quote.getTags().size() + " tags." + "num" + i);
       for (String tag : quote.getTags()) {
         LOG.info("> " + tag);
       }
@@ -123,13 +123,8 @@ public class Application implements IApplication {
     currentDir = currentDir.concat("/").concat(filename);
     File file = new File(currentDir);
 
-    boolean newDir =  file.getParentFile().mkdirs();
-    if (!newDir)
-      throw new IOException("Directory not created");
-
-    boolean newFile = file.createNewFile();
-    if (!newFile)
-      throw new IOException("File not created");
+    file.getParentFile().mkdirs();
+    file.createNewFile();
 
     BufferedWriter writer = new BufferedWriter(new FileWriter(currentDir));
     writer.write(quote.getQuote());
@@ -150,7 +145,12 @@ public class Application implements IApplication {
          * of the the IFileVisitor interface inline. You just have to add the body of the visit method, which should
          * be pretty easy (we want to write the filename, including the path, to the writer passed in argument).
          */
-
+        String s = file.toString() + "\n";
+        try {
+          writer.write(s);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     });
   }
