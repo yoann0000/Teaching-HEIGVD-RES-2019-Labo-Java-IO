@@ -16,16 +16,21 @@ import java.util.logging.Logger;
  * @author Olivier Liechti
  */
 public class FileNumberingFilterWriter extends FilterWriter {
+  private int line;
+  private String output;
+  private char previousChar;
 
   private static final Logger LOG = Logger.getLogger(FileNumberingFilterWriter.class.getName());
 
   public FileNumberingFilterWriter(Writer out) {
     super(out);
+    line = 1;
+    output = line++ + "\t";
   }
 
   @Override
   public void write(String str, int off, int len) throws IOException {
-
+    str.
   }
 
   @Override
@@ -35,7 +40,17 @@ public class FileNumberingFilterWriter extends FilterWriter {
 
   @Override
   public void write(int c) throws IOException {
+    if (previousChar == '\r' && (char) c != '\n') {
+      output += line++ + "\t" + (char) c;
+    } else if ((char) c != '\n') {
+      output += (char) c;
+    } else {
+      output += "\n" + line++ + "\t";
+    }
 
+    out.write(output);
+    output = "";
+    previousChar = (char) c;
   }
 
 }
