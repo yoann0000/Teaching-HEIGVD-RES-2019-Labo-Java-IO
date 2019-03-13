@@ -1,5 +1,7 @@
 package ch.heigvd.res.labio.impl.filters;
 
+import ch.heigvd.res.labio.impl.Utils;
+
 import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -30,7 +32,19 @@ public class FileNumberingFilterWriter extends FilterWriter {
 
   @Override
   public void write(String str, int off, int len) throws IOException {
-    str.
+    String[] strUtils = {"", str.substring(off, off+len)};
+
+    do {
+      strUtils = Utils.getNextLine(strUtils[1]);
+
+      if (strUtils[0].isEmpty()){
+        output = output.concat(strUtils[1]);
+      } else {
+        output = output.concat(strUtils[0]);
+      }
+      out.write(output);
+      output = line++ + "\t";
+    } while (!strUtils[1].isEmpty());
   }
 
   @Override
