@@ -5,6 +5,7 @@ import ch.heigvd.res.labio.impl.Utils;
 import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -34,22 +35,27 @@ public class FileNumberingFilterWriter extends FilterWriter {
   public void write(String str, int off, int len) throws IOException {
     String[] strUtils = {"", str.substring(off, off+len)};
 
+    if (output.length() > 2) {
+      output = "";
+    }
+
     do {
       strUtils = Utils.getNextLine(strUtils[1]);
 
       if (strUtils[0].isEmpty()){
         output = output.concat(strUtils[1]);
+        break;
       } else {
         output = output.concat(strUtils[0]);
+        output = output + line++ + "\t";
       }
-      out.write(output);
-      output = line++ + "\t";
     } while (!strUtils[1].isEmpty());
+    out.write(output);
   }
 
   @Override
   public void write(char[] cbuf, int off, int len) throws IOException {
-
+    out.write(Arrays.toString(cbuf));
   }
 
   @Override
